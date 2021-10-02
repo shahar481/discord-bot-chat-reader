@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from server.consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME
+from server.consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME, SERVERS_DIV_XPATH
 from server.exceptions import ChatNotFoundException
 
 
@@ -24,7 +24,7 @@ class DiscordServer:
         self._go_in_server()
 
     def _go_in_server(self):
-        servers = self._browser.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div[2]/div/div/nav/ul/div[2]/div[3]")
+        servers = self._browser.find_element(By.XPATH, SERVERS_DIV_XPATH)
         for element in servers.find_elements(By.CLASS_NAME, SERVER_CLASS_NAME):
             name_class = element.find_element(By.CLASS_NAME, "blobContainer-pmnxKB")
             name = name_class.get_attribute("data-dnd-name")
