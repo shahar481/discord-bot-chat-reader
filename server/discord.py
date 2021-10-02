@@ -8,20 +8,37 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 from consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME
-from server.exceptions import ChatNotFoundException
+from server.exceptions import ChatNotFoundException, ButtonNotFoundException
 
 
 class DiscordServer:
 
-    def __init__(self, server_name: str, browser: WebDriver):
-        self._server_name = server_name
+    def __init__(self, browser: WebDriver, server_name: str, username: str, password: str):
         self._browser = browser
+        self._server_name = server_name
+        self._username = username
+        self._password = password
 
-    def login(self):
-        self._browser.get(DISCORD_LOGIN_URL)
-        print("Login not implemented, press any key after you have successfully logged in!")
+    def open_server(self):
+        self._login()
+        print("Screen check not implemented yet.")
         input()
         self._go_in_server()
+
+    def _login(self):
+        self._browser.get(DISCORD_LOGIN_URL)
+        username_input, password_input = self._browser.find_elements(By.TAG_NAME, "input")
+        login_button = self._get_button_by_text("Login")
+        username_input.send_keys(self._username)
+        password_input.send_keys(self._password)
+        login_button.click()
+
+    def _get_button_by_text(self, text):
+        buttons = self._browser.find_elements(By.TAG_NAME, 'button')
+        for button in buttons:
+            if button.text == text:
+                return button
+        raise ButtonNotFoundException()
 
     def _go_in_server(self):
         servers = self._browser.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div[2]/div/div/nav/ul/div[2]/div[3]")
