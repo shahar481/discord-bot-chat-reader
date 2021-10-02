@@ -1,13 +1,13 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from time import sleep
-from typing import Generator, List, Tuple
+from typing import Generator, List
 
-from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME
+from server.consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME
 from server.exceptions import ChatNotFoundException
 
 
