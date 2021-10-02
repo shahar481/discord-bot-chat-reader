@@ -1,4 +1,3 @@
-from datetime import datetime
 from time import sleep
 from typing import Generator, List
 
@@ -7,7 +6,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from server.consts import DISCORD_LOGIN_URL, SERVER_CLASS_NAME, SERVERS_DIV_XPATH
+from server.consts import *
 from server.exceptions import ChatNotFoundException
 
 
@@ -25,9 +24,9 @@ class DiscordServer:
 
     def _go_in_server(self):
         servers = self._browser.find_element(By.XPATH, SERVERS_DIV_XPATH)
-        for element in servers.find_elements(By.CLASS_NAME, SERVER_CLASS_NAME):
-            name_class = element.find_element(By.CLASS_NAME, "blobContainer-pmnxKB")
-            name = name_class.get_attribute("data-dnd-name")
+        for element in servers.find_elements(By.CLASS_NAME, SERVER_EXTERNAL_DIV_CLASS):
+            name_class = element.find_element(By.CLASS_NAME, SERVER_INTERNAL_DIV_CLASS)
+            name = name_class.get_attribute(SERVER_NAME_ATTRIBUTE)
             if name == self._server_name:
                 element.click()
 
@@ -44,9 +43,9 @@ class DiscordServer:
                 last_message = message
 
     def _get_all_messages(self) -> List[WebElement]:
-        messages = self._browser.find_elements(By.XPATH, "//li[starts-with(@id, 'chat-messages-')]")
+        messages = self._browser.find_elements(By.XPATH, MESSAGES_LIST)
         while len(messages) == 0:
-            messages = self._browser.find_elements(By.XPATH, "//li[starts-with(@id, 'chat-messages-')]")
+            messages = self._browser.find_elements(By.XPATH, MESSAGES_LIST)
         return messages
 
     def _get_unread_exception_loop(self, last_message: str, one_before_message: str,
@@ -66,9 +65,9 @@ class DiscordServer:
         return unread_messages[::-1]
 
     def _get_in_chat(self, chat_name: str):
-        chats = self._browser.find_elements(By.CLASS_NAME, "containerDefault--pIXnN")
+        chats = self._browser.find_elements(By.CLASS_NAME, CHANNEL_CLASS)
         for chat in chats:
-            if chat.get_attribute("data-dnd-name") == chat_name:
+            if chat.get_attribute(CHANNEL_NAME_ATTRIBUTE) == chat_name:
                 chat.click()
                 sleep(3)
                 return
