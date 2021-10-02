@@ -21,8 +21,8 @@ class DiscordServer:
 
     def open_server(self):
         self._login()
-        print("Screen check not implemented yet.")
-        input()
+        input()  # Wait for discord to load
+        self._close_popup()
         self._go_in_server()
 
     def _login(self):
@@ -39,6 +39,11 @@ class DiscordServer:
             if button.text == text:
                 return button
         raise ButtonNotFoundException()
+
+    def _close_popup(self):
+        close_buttons = self._browser.find_elements(By.XPATH, "//button[@aria-label='Close']")
+        for button in close_buttons:
+            button.click()
 
     def _go_in_server(self):
         servers = self._browser.find_element(By.XPATH, "/html/body/div[1]/div[2]/div/div[2]/div/div/nav/ul/div[2]/div[3]")
