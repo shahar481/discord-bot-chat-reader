@@ -33,7 +33,7 @@ class DiscordServer:
         password_input.send_keys(self._password)
         login_button.click()
 
-    def _get_button_by_text(self, text):
+    def _get_button_by_text(self, text: str) -> WebElement:
         buttons = self._browser.find_elements(By.TAG_NAME, 'button')
         for button in buttons:
             if button.text == text:
@@ -74,7 +74,7 @@ class DiscordServer:
             messages = self._get_all_messages()
             return self._get_unread_exception_loop(last_message, one_before_message, messages)
 
-    def _get_unread_messages(self, last_message: str, one_before_message: str,  messages: List[WebElement]) -> List[str]:
+    def _get_unread_messages(self, last_message: str, one_before_message: str, messages: List[WebElement]) -> List[str]:
         unread_messages = []
         for id in range(len(messages) - 1, 0, -1):
             if messages[id].text == last_message or messages[id].text == one_before_message:
