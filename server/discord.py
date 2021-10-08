@@ -7,20 +7,42 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 from server.consts import *
-from server.exceptions import ChatNotFoundException
+from server.exceptions import ChatNotFoundException, ButtonNotFoundException
 
 
 class DiscordServer:
 
-    def __init__(self, server_name: str, browser: WebDriver):
-        self._server_name = server_name
+    def __init__(self, browser: WebDriver, server_name: str, username: str, password: str):
         self._browser = browser
+        self._server_name = server_name
+        self._username = username
+        self._password = password
 
-    def login(self):
-        self._browser.get(DISCORD_LOGIN_URL)
-        print("Login not implemented, press any key after you have successfully logged in!")
-        input()
+    def open_server(self):
+        self._login()
+        input()  # Wait for discord to load
+        self._close_popup()
         self._go_in_server()
+
+    def _login(self):
+        self._browser.get(DISCORD_LOGIN_URL)
+        username_input, password_input = self._browser.find_elements(By.TAG_NAME, "input")
+        login_button = self._get_button_by_text("Login")
+        username_input.send_keys(self._username)
+        password_input.send_keys(self._password)
+        login_button.click()
+
+    def _get_button_by_text(self, text: str) -> WebElement:
+        buttons = self._browser.find_elements(By.TAG_NAME, 'button')
+        for button in buttons:
+            if button.text == text:
+                return button
+        raise ButtonNotFoundException()
+
+    def _close_popup(self):
+        close_buttons = self._browser.find_elements(By.XPATH, "//button[@aria-label='Close']")
+        for button in close_buttons:
+            button.click()
 
     def _go_in_server(self):
         servers = self._browser.find_element(By.XPATH, SERVERS_DIV_XPATH)
@@ -56,7 +78,7 @@ class DiscordServer:
             messages = self._get_all_messages()
             return self._get_unread_exception_loop(last_message, one_before_message, messages)
 
-    def _get_unread_messages(self, last_message: str, one_before_message: str,  messages: List[WebElement]) -> List[str]:
+    def _get_unread_messages(self, last_message: str, one_before_message: str, messages: List[WebElement]) -> List[str]:
         unread_messages = []
         for id in range(len(messages) - 1, 0, -1):
             if messages[id].text == last_message or messages[id].text == one_before_message:
